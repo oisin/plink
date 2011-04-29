@@ -1,0 +1,139 @@
+web apis with rack/sinatra and mongodb
+
+example application is a location beat - topical!
+
+set - client side is very simple, you have a handset and an application id. handset is unique within the context of the application id. theres a map between the handset id and some concrete identifying features of the handset, so we can check for changes in the hardware and disable. So there’s a registration thing going on.
+
+app id, app name, app version, app owner
+
+handset gets registered, handset starts broadcasting, we start storing - lat, long, alt, accu, time, handset
+
+what do we need to handle
+
+* authentication - are you the right handset
+* flooding - crazy client is crazy
+* scale - minimal response time for synchronous protocol
+
+technology contents - rack, sinatra, mongodb
+
+why? rack is a good standard, sinatra is easy to use, mongodb just because!
+
+I was thinking of redis here - keeping a list thereof, but insert some reason for choosing mongo instead and link up to it.
+
+Let’s design the API.
+
+what are the conditions a good API?  focussed. short. bandwidth-savvy. resilient. evolution strategy.
+
+this one is going to be easy.
+
+ ping (lat, long, alt, accu, handset)
+ track (starttime, period, handset)
+
+that’s focussed and short.
+
+Note we don’t have anything that establishes a session. Why - because we don’t need it. Pass
+the handset id with each request, and the auth is done on the server. If the handsetid is not 
+registered, then we drop the request.
+
+We’ll use some rack middleware for that. 
+
+Hang on - what if the device changes? At random intervals, we’ll put a challenge to the device. Send
+me your stuff. So when it does a ping, we’ll send a return code that indicates that. Then we need another
+API call
+
+register(handset, details)
+
+that will register a handset for use and authentication.
+
+Bandwidth savvy means that we don’t pile on lots of data. latency savvy means we don’t chop the data up too small. Middle ground is required and this really means you have to look at the application usage. Here where we are there isn’t a specific user interaction, so the latency isn’t an issue really (no-one sees a slow-down), and the amount of data is small, sent at appropriate intervals, so the bandwidth is not hogged.
+
+But - we’ve no control over the behaviour of the clients - what if one of them goes nuts and starts to DoS the server? There’s a middleware for that:  rack_throttle. This gives us a number of options on how we can structure the access - per interval, number of invocations, etc 
+
+(include examples here)
+
+resilience means stability of behaviour in the presence of badness. if there is weird data thrown at us, for example, or someone attempts to hog a connection. We cope with weird data by rejecting stuff that is large, and by picking out just what we need from the payloads.
+
+an evolution strategy is something that you need if you want the service to live through API changes. There’s lots of ways to solve this, from subtle to blatant, and it’s ok to just hit this with a hammer and put a version in the URL
+
+  POST /api/1.0/ping
+
+for example. Lots of services do this already (cite examples). To go with this you just need a compatibility statement - what the 1.0 means and what it means for your users to go to 1.1, or 2.0, for example. Stick to this or you will definitely piss people off.
+
+Let’s go an set this up!
+
+MONGO - go here and get this set up. if you are using a mac,
+ there’s a neat client called MongoHub which I use to see what’s
+going on the database.
+
+Being the land of ruby, we are rosily suffused with choice of support
+for mapping objects to the Mongo DB.
+Mongoid. MongoMapper. Mongomatic. MongoModel.
+
+http://mongoid.org/
+http://mongomapper.com/
+http://mongomatic.com/
+http://www.mongomodel.org/documents
+
+http://www.slideshare.net/drumwurzel/practical-ruby-projects-with-mongo-db
+http://www.slideshare.net/sbeam/no-sql-no-problem-using-mongodb-in-ruby
+http://www.slideshare.net/pengwynn/mongodb-ruby-document-store-that-doesnt-rhyme-with-ouch
+http://www.slideshare.net/pengwynn/hands-on-with-ruby-mongodb
+http://www.slideshare.net/jnunemaker/mongodb-grand-rapids-rug
+http://www.slideshare.net/kidpollo/mongo-mapper
+
+I kinda liked mongomapper better because of the way it
+does indexes and embedded models. So lets go for that (maybe 
+some more research here for the crew).
+
+Before we write any code, let’s take a look at what is going to go
+into the database.
+
+A -> database content
+
+NOW Let’s write some code!
+
+1. The API, in sinatra.
+
+2. Plugging it into the Mongo.
+
+3. Let’s write a test.
+
+4. Let’s write another test, this time, to simulate a mad client
+
+5. Let’s configure Rack::Throttle now to stop the madness
+
+6. No authentication here - let’s do that now with Rack::Warden
+and a custom authentication thingie.
+
+7. Let’s put in a test for that. Yay!
+
+8. So where are we. We haven’t done the ‘handset hardware change’ bit.
+
+9. Let’s write a test.
+
+10. ok now let’s put the code in.
+
+Only three things are left, I think. 1) some way to look at all the 
+handsets and the updates! and 2) an actual handset client to run 
+against it and 3) somewhere on the webs to put the damn thing.
+
+1. Let’s make a web page then that you can select a handset and
+then you can see a map of everywhere that the handset has pinged 
+from. We can put this in the sinatra too, or we can Rack mount 
+another little application to do it. Of course, the google is 
+absolutely necessary for this!
+
+2. Ok, let’s write an iOS client. Ok, let’s not - here’s one I
+made earlier! (simulator)
+
+3. Where o where are we going to put this. The two places I’d 
+look at right now are heroku and cloudfoundry. Heroku is the one
+that I’m used to, but cloudfoundry can do it too, so maybe we 
+can take a quick look at both!
+
+bundles
+  rack throttle
+  sinatra
+  rack warden
+  mongomapper
+  
