@@ -2,7 +2,7 @@ require 'sinatra'
 
 get '/track' do
   puts "++++++++++++ TRACK"
-  501
+  200
 end
 
 post '/plink' do
@@ -21,13 +21,13 @@ delete '/:handset' do
 end
 
 configure do
-  MAJOR_VERSION = 1
-  MINOR_VERSION = 0
+  MAJOR_VERSION = (ENV['MAJOR_VERSION'] || 1)
+  MINOR_VERSION = (ENV['MINOR_VERSION'] || 0)
 end
 
 helpers do
   def version_compatible?(nums)
-    return MAJOR_VERSION == nums[0].to_i && MINOR_VERSION >= nums[1].to_i
+    return MAJOR_VERSION.to_i == nums[0].to_i && MINOR_VERSION.to_i >= nums[1].to_i
   end
 end
 
