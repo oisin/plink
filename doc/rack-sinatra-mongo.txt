@@ -94,6 +94,44 @@ NOW Let’s write some code!
 
 1. The API, in sinatra.
 
+Why do we want to version. This is important. You may think it’s
+a little fussy - but you are making an API to have developer 
+consumers, not just for laughs. YOU need to control the lifecycle
+of the API - it doesn’t control you. That’s what versioning is
+for - it allows you to add and remove capabilities, while keeping
+the consumers informed. Usually, you would have a compatibility
+statement somewhere in the docs - so for example you only break
+compatibility on major version number increments - that’s where
+deprecations get cut out. Minor version increments are expected
+to be backward compatible - but not forward compatible, so a
+1.4 server should work with a 1.2 client, but not necessarily v.v.
+so we check.
+
+configure do
+  MAJOR_VERSION = 1
+  MINOR_VERSION = 0
+end
+
+helpers do
+  def version_compatible?(nums)
+    return MAJOR_VERSION == nums[0].to_i && MINOR_VERSION >= nums[1].to_i
+  end
+end
+
+before %r{/api/v(\d)\.(\d)} do
+  if version_compatible?(params[:captures])
+    target = request.fullpath.split('/').last
+    request.path_info = "/#{target}"
+  else
+    halt 400, "Version not compatible with this server"
+  end
+end
+
+So this approach just detects incompatible version expectations 
+from the client. Using Rack, you can do more, by routing the 
+requests to a correctly versioned server. We’ll look at that
+later (TBD)
+
 2. Plugging it into the Mongo.
 
 3. Let’s write a test.
