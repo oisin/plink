@@ -5,8 +5,6 @@ require 'rack/test'
 # app or it will make its own in the configure
 # and these will have no effect.
 ENV['RACK_ENV'] = 'test'
-ENV['MAJOR_VERSION'] = '1'
-ENV['MINOR_VERSION'] = '3'
 
 require '../plink'
 

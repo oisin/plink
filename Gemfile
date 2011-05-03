@@ -1,9 +1,11 @@
-source "http://rubygems.org"
+source :rubygems
 
 gem 'rack'
 gem 'rack-throttle'
 gem 'sinatra'
 gem 'json'
+gem 'bson_ext'
+gem 'sinatra-mongomapper'
 
 group :test, :develop do
   gem 'ruby-debug'
