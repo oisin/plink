@@ -80,6 +80,8 @@ http://www.slideshare.net/pengwynn/mongodb-ruby-document-store-that-doesnt-rhyme
 http://www.slideshare.net/pengwynn/hands-on-with-ruby-mongodb
 http://www.slideshare.net/jnunemaker/mongodb-grand-rapids-rug
 http://www.slideshare.net/kidpollo/mongo-mapper
+http://www.slideshare.net/ihower/designing-ruby-apis
+http://www.slideshare.net/benschwarz/sinatra-rack-and-middleware-1509268
 
 I kinda liked mongomapper better because of the way it
 does indexes and embedded models. So lets go for that (maybe 
@@ -132,9 +134,18 @@ from the client. Using Rack, you can do more, by routing the
 requests to a correctly versioned server. We’ll look at that
 later (TBD)
 
+1.5 Let’s write a test to check versioning.
+
+DONE.
+
 2. Plugging it into the Mongo.
 
+http://www.viget.com/extend/getting-started-with-mongodb-mongomapper/
+http://railstips.org/blog/archives/2009/06/03/what-if-a-key-value-store-mated-with-a-relational-database-system/   --> GOOD INTRO
+
 3. Let’s write a test.
+
+DONE.
 
 4. Let’s write another test, this time, to simulate a mad client
 

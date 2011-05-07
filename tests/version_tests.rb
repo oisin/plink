@@ -17,12 +17,12 @@ class VersionTests < Test::Unit::TestCase
 
   def test_compatible_exact
     get '/api/v1.3/track'
-    assert_equal 200, last_response.status
+    assert_not_equal 400, last_response.status
   end
 
   def test_compatible_backward
     get '/api/v1.1/track'
-    assert_equal 200, last_response.status
+    assert_not_equal 400, last_response.status
   end
 
   def test_incompatible_major

@@ -1,7 +1,7 @@
 class Handset
   include MongoMapper::Document
 
-  key :id, String
+  key :code, String
   key :salt, String
   key :status, String
   many :locations
