@@ -223,20 +223,26 @@ for rack/throttle!
 
 TAG AT THIS POINT
 
-6. No authentication here - let’s do that now with Rack::Warden
-and a custom authentication thingie.
+{  CUT THIS.
+    6. No authentication here - let’s do that now with Rack::Warden
+    and a custom authentication thingie.
 
-7. Let’s put in a test for that. Yay!
+    7. Let’s put in a test for that. Yay!
+}
+
+{ CUT THIS
+    8. So where are we. We haven’t done the ‘handset hardware change’ bit.
+
+    The hardware change means that we (sometimes) detect when
+    the DNA of the handset has changed. We change the code of the
+    hadnset to do this
+
+    9. Let’s write a test.
+
+    10. ok now let’s put the code in.
 
 TAG AT THIS POINT
-
-8. So where are we. We haven’t done the ‘handset hardware change’ bit.
-
-9. Let’s write a test.
-
-10. ok now let’s put the code in.
-
-TAG AT THIS POINT
+}
 
 Only three things are left, I think. 1) some way to look at all the 
 handsets and the updates! and 2) an actual handset client to run 
@@ -261,6 +267,5 @@ can take a quick look at both!
 bundles
   rack throttle
   sinatra
-  rack warden
   mongomapper
   
