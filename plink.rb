@@ -83,7 +83,24 @@ put '/register' do
     end
     code
   else
-    [400, 'No handset data provided']
+    [400, 'No handset registration data provided']
+  end
+end
+
+post '/update/:handset' do
+  payload = request.body.read
+  if payload
+      h = Handset.find_by_code(params[:handset])
+      if h
+        h.code = Digest::SHA512.hexdigest("#{payload}")
+        h.save
+      else
+        [404, "No handset with that identification is registered"]
+    else
+      [400, 'No replacement handset data provided']
+    end
+  else
+    [400, 'No handset update data provided']
   end
 end
 
