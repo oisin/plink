@@ -15,6 +15,10 @@ class RegisterTests < Test::Unit::TestCase
     PlinkApp
   end
 
+  def setup
+    Handset.delete_all
+  end
+  
   def make_me_a_handset(name)
     payload = { :test => name }
     put '/api/v1.3/register', payload.to_json

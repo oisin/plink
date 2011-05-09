@@ -259,7 +259,7 @@ We need to switch to the modular style of sinatra.
 Now create a new app 
 
 Updated the rack starter script
-
+  
 Now - lookee here - there's a place where we could think
 about versioning here as well..
 
