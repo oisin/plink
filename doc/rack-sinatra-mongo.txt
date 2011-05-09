@@ -218,7 +218,8 @@ that it is to only look @ the 'plink' API call.
 
 We should store the rate counts in memcached or redis - if 
 we are going to have many of these guys running, they will
-need to share the rate counts!
+need to share the rate counts! Note - make a mongo adapter
+for rack/throttle!
 
 TAG AT THIS POINT
 
