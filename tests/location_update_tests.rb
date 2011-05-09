@@ -12,7 +12,7 @@ class LocationUpdateTests < Test::Unit::TestCase
   include Rack::Test::Methods
 
   def app
-    Sinatra::Application
+    PlinkApp
   end
 
   def make_me_a_handset(name)

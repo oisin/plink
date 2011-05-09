@@ -1,3 +1,10 @@
-require './plink'
+require 'plink'
+require 'track'
 
-run Sinatra::Application
+map "/track" do
+  run TrackApp
+end
+
+map "/" do
+  run PlinkApp
+end

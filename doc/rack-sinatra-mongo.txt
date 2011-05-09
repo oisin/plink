@@ -254,6 +254,33 @@ from. We can put this in the sinatra too, or we can Rack mount
 another little application to do it. Of course, the google is 
 absolutely necessary for this!
 
+We need to switch to the modular style of sinatra.
+
+Now create a new app 
+
+Updated the rack starter script
+
+Now - lookee here - there's a place where we could think
+about versioning here as well..
+
+map '/api' do
+  map '/v1.3' do
+    run PlinkApp
+  end
+
+  map '/latest' do
+    run PlinkApp
+  end
+end
+
+
+TBD:
+   *  Make sure that the JS etc can all be found - change layout relative paths
+   *  create a list of handsets, which are linked to handset pages
+   *  show the location blobs as lots of map things, maybe.
+   *  publish to heroku
+   * SLIDES SLIDES SLIDES.
+   
 TAG AT THIS POINT 
 
 2. Ok, let’s write an iOS client. Ok, let’s not - here’s one I
