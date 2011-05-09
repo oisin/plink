@@ -137,6 +137,7 @@ later (TBD)
 1.5 Let’s write a test to check versioning.
 
 DONE.
+TBD: TAG AT THIS POINT
 
 2. Plugging it into the Mongo.
 
@@ -145,22 +146,96 @@ http://railstips.org/blog/archives/2009/06/03/what-if-a-key-value-store-mated-wi
 
 3. Let’s write a test.
 
+Talk about putting an index on the handset
+
 DONE.
+TBD: TAG AT THIS POINT
+
+rack_throttle_branch now.
+
+3.5 Let's write the functionality now shall we?
+
+We're going to collect a chunk of data, potentially a large amount. Do we
+want to have a years worth of data for a handset? Perhaps not. Maybe only
+the last month or so will be enough - let's say 90 days. We want to have 
+a moving window of 90 days worth of location pings. We can tune that later
+as we look into the issue of database size. 
+
+CAPPED COLLECTION IS A BUST FOR HERE
+
+In any case, mongo gives us a real boost here by providing the concept
+of a Capped Collection.
+I had started off with sinatra/mongomapper - but don't really need it,
+it just makes the 'set; stuff look nice
+
+We'll cap the collection at oooh 2MB. 
+
+MongoMapper.database.create_collection(:locations, {:capped => true, :size => 2097152})
+
+
+http://www.mongodb.org/display/DOCS/Capped+Collections
+
+This is a fixed-size collection that has a high-performance way of
+throwing out old entries - and it maintains insertion order, so it's
+just the job for this kind of logging work.
+
+I don't need to add an index, because this is more writes than
+reads - capped collections work best with no indices. Note also
+that capped collectiosn are not shardable.
+
+We're going to model the Location as an EmbeddedDocument - this is 
+a kind of a containment relationship - a belongs_to is perhaps the
+nearest relation in rails etc and you can see in the model code
+where this is added 'many locations'. Actually, this turns out to
+be not quite right for us -- an embedded document is put into another
+document, not in a collection of its own..
+
+The learning experience of mongo:..
+
+"The key question in Mongo schema design is "does this object merit its own collection, or rather should it embed in objects in other collections?""
+
+Lets write a test first and get it to pass.
+
+Point out the place where the Dynamic Queries a la rails have
+been included...
+
+
+http://datagraph.rubyforge.org/rack-throttle/
 
 4. Let’s write another test, this time, to simulate a mad client
 
 5. Let’s configure Rack::Throttle now to stop the madness
+
+Rack throttle has a number of approachs to throttling, and we 
+can limit an interval between invocations and the number of 
+invocations per hour. Once a client (as identified by IP) goes
+over this amount, then its 403'd. 
+
+I'm going to limit clients to an interval - once location update
+every 5 minutes. If we just blast in there and set this interval,
+it will be across the board, so we need to tell Rack::Throttle 
+that it is to only look @ the 'plink' API call.
+
+We should store the rate counts in memcached or redis - if 
+we are going to have many of these guys running, they will
+need to share the rate counts!
+
+TAG AT THIS POINT
 
 6. No authentication here - let’s do that now with Rack::Warden
 and a custom authentication thingie.
 
 7. Let’s put in a test for that. Yay!
 
+TAG AT THIS POINT
+
 8. So where are we. We haven’t done the ‘handset hardware change’ bit.
 
 9. Let’s write a test.
 
 10. ok now let’s put the code in.
+
+TAG AT THIS POINT
 
 Only three things are left, I think. 1) some way to look at all the 
 handsets and the updates! and 2) an actual handset client to run 
@@ -171,6 +246,8 @@ then you can see a map of everywhere that the handset has pinged
 from. We can put this in the sinatra too, or we can Rack mount 
 another little application to do it. Of course, the google is 
 absolutely necessary for this!
+
+TAG AT THIS POINT 
 
 2. Ok, let’s write an iOS client. Ok, let’s not - here’s one I
 made earlier! (simulator)

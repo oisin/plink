@@ -1,10 +1,9 @@
 $:.unshift File.join(File.expand_path(File.dirname(__FILE__)))
 
 require 'sinatra'
-require 'sinatra/mongomapper'
+require 'mongo_mapper'
+require 'rack/throttle'
 
-set :mongomapper, 'mongomapper://localhost:27017/plink_trail_' + ENV['RACK_ENV']
-set :mongo_logfile, File.join("log", "mongo-driver-#{ENV['RACK_ENV']}.log")
 set :show_exceptions, false
 
 MAJOR_VERSION = 1
@@ -12,13 +11,24 @@ MINOR_VERSION = 3
 VERSION_REGEX = %r{/api/v(\d)\.(\d)}
 
 require 'plinkmodels'
+require 'throttler'
+
+if :environment == :production
+  use Throttler, :min => 300.0
+end
+
+configure {
+  MongoMapper.connection = Mongo::Connection.new("localhost", 27017)
+  MongoMapper.database = "plink_trail_" + ENV['RACK_ENV']
+  Handset.ensure_index(:code)
+}
 
 # Return track data on the given handset
 #
 get '/track/:handset' do
   h = Handset.where(:code => params[:handset]).first
   if h
-    200
+    h.locations.to_json
   else
     [404, 'Handset not registered']
   end
@@ -28,8 +38,30 @@ end
 # trail
 #
 post '/plink' do
-  puts "++++++++++++ PLINK"
-  501
+  payload = request.body.read
+  if payload
+    data = JSON.parse(payload)
+    h = Handset.find_by_code(data['handset'])
+    if h
+      location = Location.new(:time => DateTime.now)
+
+      %w{handset lat long}.each do |item|
+        halt 400, "Missing #{item} datum" unless data["#{item}"]
+        location["#{item}"] = data["#{item}"]
+      end
+
+      %w{accu alt}.each do |item|
+        location["#{item}"] = data["#{item}"]
+      end
+      h.locations << location
+      h.save
+      200
+    else
+      [404, "No handset with that identification is registered"]
+    end
+  else
+    [400, "No location data provided"]
+  end
 end
 
 # Register the handset, plus DNA, assign an
@@ -51,7 +83,7 @@ put '/register' do
     end
     code
   else
-    [400, 'Cannot register handset']
+    [400, 'No handset data provided']
   end
 end
 

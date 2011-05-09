@@ -22,7 +22,7 @@ class RegisterTests < Test::Unit::TestCase
     assert_not_nil last_response.body, "No identifier returned for handset"
     last_response.body
   end
-
+  
   def test_register_handset
     handset = make_me_a_handset('test_register_handset') 
     h = Handset.where(:code => handset).first
