@@ -9,6 +9,9 @@ gem 'mongo_mapper'
 gem 'memcached'
 gem 'SystemTimer'
 
+# This is to prevent CloudFoundry from using WEBrick
+gem 'thin'
+
 group :test, :develop do
   gem 'ruby-debug'
 end

@@ -27,6 +27,14 @@ class PlinkApp < Sinatra::Base
       MongoMapper.connection = Mongo::Connection.new(uri.host, uri.port)
       MongoMapper.database = uri.path.gsub(/^\//, '')
       MongoMapper.database.authenticate(uri.user, uri.password)
+    elsif ENV['VCAP_SERVICES']
+      puts "Running on CloudFoundry Mongo"
+      info = cloudfoundry_mongo_connection_info
+      MongoMapper.connection = Mongo::Connection.new(info['hostname'], info['port'])
+      MongoMapper.database = info['db'] || 'db'
+      if info['username'] and info['password']
+        MongoMapper.database.authenticate(info['username'], info['password'])
+      end
     else
       puts "Using local database" 
       MongoMapper.connection = Mongo::Connection.new("localhost", 27017)
@@ -101,6 +109,20 @@ class PlinkApp < Sinatra::Base
   helpers do
     def version_compatible?(nums)
       return MAJOR_VERSION == nums[0].to_i && MINOR_VERSION >= nums[1].to_i
+    end
+    
+    def cloudfoundry_mongo_connection_info
+      services = JSON.parse(ENV['VCAP_SERVICES'])
+      services.each do |service_version, bindings|
+        bindings.each do |binding|
+          if binding['label'] =~ /mongo/i
+            res = binding['credentials']
+            return res
+          end
+        end
+      end
+
+      raise "Could not find CloudFoundry Mongo Service connection data"
     end
   end
 
