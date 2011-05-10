@@ -21,12 +21,17 @@ class PlinkApp < Sinatra::Base
   end
   
   configure do
-    if ENV['MONGOHQ_URL']
-      MongoMapper.connection = Mongo::Connection.from_uri(ENV['MONGOHQ_URL'])
+    if ENV['MONGOHQ_HOST']
+      puts "Running on MongoHQ" 
+      MongoMapper.connection = Mongo::Connection.new(ENV['MONGOHQ_HOST'], ENV['MONGOHQ_PORT'])
+      MongoMapper.database = ENV['MONGOHQ_DATABASE']
+      MongoMapper.database.authenticate(ENV['MONGOHQ_USER'],ENV['MONGOHQ_PASSWORD'])
     else
+      puts "Using local database" 
       MongoMapper.connection = Mongo::Connection.new("localhost", 27017)
+      MongoMapper.database = "plink_trail_" + ENV['RACK_ENV']
     end
-    MongoMapper.database = "plink_trail_" + ENV['RACK_ENV']
+
     Handset.ensure_index(:code)
   end
 
