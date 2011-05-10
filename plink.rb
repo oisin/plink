@@ -2,6 +2,7 @@ $:.unshift File.join(File.expand_path(File.dirname(__FILE__)))
 
 require 'sinatra/base'
 require 'mongo_mapper'
+require 'memcached'
 require 'rack/throttle'
 
 require 'plinkmodels'
@@ -13,16 +14,21 @@ class PlinkApp < Sinatra::Base
   MAJOR_VERSION = 1
   MINOR_VERSION = 3
   VERSION_REGEX = %r{/api/v(\d)\.(\d)}
+  MAX_LOCATIONS = 12 * 24 * 90   # 12 per hour, 24 hours a day, for 90 days
 
-  if :environment == :production
-    use Throttler, :min => 300.0
+  configure :production do
+    use Throttler, :min => 300.0, :cache => Memcached.new, :key_prefix => :throttle
   end
-
-  configure {
-    MongoMapper.connection = Mongo::Connection.new("localhost", 27017)
+  
+  configure do
+    if ENV['MONGOHQ_URL']
+      MongoMapper.connection = Mongo::Connection.from_uri(ENV['MONGOHQ_URL'])
+    else
+      MongoMapper.connection = Mongo::Connection.new("localhost", 27017)
+    end
     MongoMapper.database = "plink_trail_" + ENV['RACK_ENV']
     Handset.ensure_index(:code)
-  }
+  end
 
   # Post an update to the handset's location
   # trail
@@ -44,6 +50,9 @@ class PlinkApp < Sinatra::Base
           location["#{item}"] = data["#{item}"]
         end
         h.locations << location
+        if h.locations.count > MAX_LOCATIONS
+          h.locations.shift
+        end
         h.save
         200
       else

@@ -6,6 +6,7 @@ gem 'sinatra'
 gem 'json'
 gem 'bson_ext'
 gem 'mongo_mapper'
+gem 'memcached'
 
 group :test, :develop do
   gem 'ruby-debug'

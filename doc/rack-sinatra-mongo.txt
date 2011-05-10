@@ -291,6 +291,30 @@ look at right now are heroku and cloudfoundry. Heroku is the one
 that I’m used to, but cloudfoundry can do it too, so maybe we 
 can take a quick look at both!
 
+520% heroku create plink
+Creating plink.... done
+http://plink.heroku.com/ | git@heroku.com:plink.git
+Git remote heroku added
+521% heroku addons:add mongohq:free
+Adding mongohq:free to plink... done (free)
+522% heroku addons:add memcache:5mb
+Adding memcache:5mb to plink... done (free)
+
+http://railsillustrated.com/blazing-fast-sinatra-with-memcached.html
+
+Now update the throttler to use memcached - this is easy enough!
+
+http://kplawver.posterous.com/date-range-queries-with-mongomapper
+
+Using rest client to do a quick test
+irb(main):001:0> require 'rest_client'
+=> true
+irb(main):004:0> require 'json'
+=> true
+irb(main):005:0> RestClient.put "http://localhost:9292/register", { 'dna' => "Hey!" }.to_json
+=> "8f1b7281910cec35deb4792c704f67efb8d4c608a5876ce1dc05f40589b7087f69757e236cb506967cb38479cef26db2eebaabd16c8a4fb1aafca19940fea9cb"
+
+
 bundles
   rack throttle
   sinatra

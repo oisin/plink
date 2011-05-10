@@ -1,0 +1,29 @@
+  <div id="container">
+    <header>
+      <p>HANDSETS</p>
+    </header>
+    <div id="main" role="main">
+      <p>Total number of handsets registered: <%= @handsets.count %> </p>
+      <table cellspacing="0">
+        <% per_row = 1 %>
+        <% rows = (@handsets.count / per_row) + ((@handsets.count % per_row == 0)?0:1) %>
+        <% rows.times do |r|  %>
+          <tr>
+            <% per_row.times do |c| %>
+              <td>
+                <% inx = r*per_row + c %>
+                <% if inx >= @handsets.count %>
+                  --
+                <% else %>
+                  <%= @handsets[inx].code %>
+                <% end %>  
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+    <footer>
+
+    </footer>
+  </div> 

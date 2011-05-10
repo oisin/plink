@@ -4,7 +4,9 @@ require 'erb'
 
 class TrackApp < Sinatra::Base
   set :show_exceptions, false
-
+  set :views, File.join(File.dirname(__FILE__), 'views/track')
+  set :public, File.join(File.dirname(__FILE__), 'public/track')
+  
   configure {
     MongoMapper.connection = Mongo::Connection.new("localhost", 27017)
     MongoMapper.database = "plink_trail_" + ENV['RACK_ENV']
