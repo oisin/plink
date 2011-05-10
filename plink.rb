@@ -21,11 +21,12 @@ class PlinkApp < Sinatra::Base
   end
   
   configure do
-    if ENV['MONGOHQ_HOST']
+    if ENV['MONGOHQ_URL']
       puts "Running on MongoHQ" 
-      MongoMapper.connection = Mongo::Connection.new(ENV['MONGOHQ_HOST'], ENV['MONGOHQ_PORT'])
-      MongoMapper.database = ENV['MONGOHQ_DATABASE']
-      MongoMapper.database.authenticate(ENV['MONGOHQ_USER'],ENV['MONGOHQ_PASSWORD'])
+      uri = URI.parse(ENV['MONGOHQ_URL'])
+      MongoMapper.connection = Mongo::Connection.(uri.host, uri.port)
+      MongoMapper.database = uri.path.gsub(/^\//, '')
+      MongoMapper.database.authenticate(uri.user, uri.password)
     else
       puts "Using local database" 
       MongoMapper.connection = Mongo::Connection.new("localhost", 27017)

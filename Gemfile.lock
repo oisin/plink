@@ -1,6 +1,7 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    SystemTimer (1.2.3)
     activemodel (3.0.7)
       activesupport (= 3.0.7)
       builder (~> 2.1.2)
@@ -41,6 +42,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  SystemTimer
   bson_ext
   json
   memcached
