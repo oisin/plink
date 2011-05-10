@@ -24,7 +24,7 @@ class PlinkApp < Sinatra::Base
     if ENV['MONGOHQ_URL']
       puts "Running on MongoHQ" 
       uri = URI.parse(ENV['MONGOHQ_URL'])
-      MongoMapper.connection = Mongo::Connection.(uri.host, uri.port)
+      MongoMapper.connection = Mongo::Connection.new(uri.host, uri.port)
       MongoMapper.database = uri.path.gsub(/^\//, '')
       MongoMapper.database.authenticate(uri.user, uri.password)
     else
