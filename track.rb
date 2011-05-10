@@ -8,8 +8,18 @@ class TrackApp < Sinatra::Base
   set :public, File.join(File.dirname(__FILE__), 'public/track')
   
   configure {
-    MongoMapper.connection = Mongo::Connection.new("localhost", 27017)
-    MongoMapper.database = "plink_trail_" + ENV['RACK_ENV']
+    if ENV['MONGOHQ_URL']
+      puts "Running on MongoHQ" 
+      uri = URI.parse(ENV['MONGOHQ_URL'])
+      MongoMapper.connection = Mongo::Connection.new(uri.host, uri.port)
+      MongoMapper.database = uri.path.gsub(/^\//, '')
+      MongoMapper.database.authenticate(uri.user, uri.password)
+    else
+      puts "Using local database" 
+      MongoMapper.connection = Mongo::Connection.new("localhost", 27017)
+      MongoMapper.database = "plink_trail_" + ENV['RACK_ENV']
+    end
+
     Handset.ensure_index(:code)
   }
 
