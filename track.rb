@@ -5,7 +5,7 @@ require 'erb'
 class TrackApp < Sinatra::Base
   set :show_exceptions, false
   set :views, File.join(File.dirname(__FILE__), 'views/track')
-  set :public, File.join(File.dirname(__FILE__), 'public/track')
+  set :public_folder, File.join(File.dirname(__FILE__), 'public/track')
   
   configure {
     if ENV['MONGOHQ_URL']
@@ -15,7 +15,7 @@ class TrackApp < Sinatra::Base
       MongoMapper.database = uri.path.gsub(/^\//, '')
       MongoMapper.database.authenticate(uri.user, uri.password)
     else
-      puts "Using local database" 
+      puts "Track:: using local database" 
       MongoMapper.connection = Mongo::Connection.new("localhost", 27017)
       MongoMapper.database = "plink_trail_" + ENV['RACK_ENV']
     end

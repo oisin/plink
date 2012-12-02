@@ -1,4 +1,4 @@
-$:.unshift File.join(File.expand_path(File.dirname(__FILE__)))
+$:<<::File.dirname(__FILE__)
 
 require 'sinatra/base'
 require 'mongo_mapper'
@@ -36,9 +36,9 @@ class PlinkApp < Sinatra::Base
         MongoMapper.database.authenticate(info['username'], info['password'])
       end
     else
-      puts "Using local database" 
+      puts "Plink:: using local database" 
       MongoMapper.connection = Mongo::Connection.new("localhost", 27017)
-      MongoMapper.database = "plink_trail_" + ENV['RACK_ENV']
+      MongoMapper.database = "plink_trail_" + (ENV['RACK_ENV'] || "test")
     end
 
     Handset.ensure_index(:code)
