@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 
 gem 'rack'
 gem 'rack-throttle'
@@ -15,12 +15,6 @@ gem 'thin'
 # resolution area. Explicit listings here
 #gem 'json'
 #gem 'httpclient'
-
-# Chances are that CloudFoundry will include these 
-# even in production :(
-group :test, :develop do
-  gem 'ruby-debug19'
-end
 
 group :test do
   gem 'rack-test'
