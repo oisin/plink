@@ -16,7 +16,7 @@ GEM
     eventmachine (0.12.10)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
-    json (1.7.3)
+    json (1.7.7)
     memcached (1.4.3)
     mongo (1.6.4)
       bson (~> 1.6.4)
